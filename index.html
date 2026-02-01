@@ -58,32 +58,32 @@
     "name": "DORO PROJECT",
     "tasks": [
       {
-        "duration": "4 days, 17:56:00",
+        "duration": "113:56",
         "scripts": 27,
         "status": "اترفع علي القناة"
       },
       {
-        "duration": "2 days, 8:05:00",
+        "duration": "56:05",
         "scripts": 4,
         "status": "خلص التعديلات"
       },
       {
-        "duration": "1 day, 20:33:00",
+        "duration": "44:33",
         "scripts": 6,
         "status": "شغال"
       },
       {
-        "duration": "1 day, 7:00:00",
+        "duration": "31:00",
         "scripts": 3,
         "status": "جاري التعديل"
       },
       {
-        "duration": "17 days, 9:48:00",
+        "duration": "417:48",
         "scripts": 52,
         "status": "في انتظار التعديلات"
       },
       {
-        "duration": "0:00:00",
+        "duration": "0:00",
         "scripts": 0,
         "status": "متاح للتسليم"
       }
@@ -93,34 +93,39 @@
     "name": "MSA PROJECT",
     "tasks": [
       {
-        "duration": "2 days, 6:36:00",
+        "duration": "54:36",
         "scripts": 10,
         "status": "خالص"
       },
       {
-        "duration": "1 day, 15:53:00",
+        "duration": "39:53",
         "scripts": 7,
         "status": "شغال"
       },
       {
-        "duration": "7 days, 13:59:00",
+        "duration": "181:59",
         "scripts": 34,
         "status": "في انتظار التعديل"
       },
       {
-        "duration": "15 days, 0:39:00",
+        "duration": "360:39",
         "scripts": 69,
         "status": "في انتظار الموافقة علي الشخصيات"
       },
       {
-        "duration": "4:38:00",
+        "duration": "4:38",
         "scripts": 1,
         "status": "مطلوب تغيير الشخصيات"
       },
       {
-        "duration": "1 day, 17:20:00",
+        "duration": "41:20",
         "scripts": 6,
         "status": "متاح للتسليم"
+      },
+      {
+        "duration": "0:00",
+        "scripts": 3,
+        "status": "في انتظار الصوت"
       }
     ]
   },
@@ -128,32 +133,32 @@
     "name": "مشروع قيم و عبر",
     "tasks": [
       {
-        "duration": "1 day, 15:01:00",
+        "duration": "39:01",
         "scripts": 6,
         "status": "جاري التعديل"
       },
       {
-        "duration": "1 day, 14:22:00",
+        "duration": "38:22",
         "scripts": 9,
         "status": "جاهز للريندر"
       },
       {
-        "duration": "1 day, 20:33:00",
+        "duration": "44:33",
         "scripts": 8,
         "status": "شغال"
       },
       {
-        "duration": "29 days, 14:39:36",
+        "duration": "710:39",
         "scripts": 18,
         "status": "في انتظار التعديلات"
       },
       {
-        "duration": "2 days, 2:52:00",
+        "duration": "50:52",
         "scripts": 8,
         "status": "متاح للتسليم"
       },
       {
-        "duration": "3 days, 11:31:00",
+        "duration": "83:31",
         "scripts": 14,
         "status": "في انتظار الموافقة علي الشخصيات"
       }
@@ -163,22 +168,22 @@
     "name": "NURSERY PROJECT",
     "tasks": [
       {
-        "duration": "00:00:00",
+        "duration": "0:00",
         "scripts": 0,
         "status": "خالص"
       },
       {
-        "duration": "15:20:00",
+        "duration": "15:20",
         "scripts": 14,
         "status": "في انتظار التعديلات"
       },
       {
-        "duration": "08:22:00",
+        "duration": "8:22",
         "scripts": 5,
         "status": "شغال"
       },
       {
-        "duration": "00:00:00",
+        "duration": "0:00",
         "scripts": 0,
         "status": "متاح للتسليم"
       }
@@ -188,17 +193,17 @@
     "name": "FOX",
     "tasks": [
       {
-        "duration": "0:00:00",
+        "duration": "0:00",
         "scripts": 26,
         "status": "ناقص صوت"
       },
       {
-        "duration": "0:00:00",
+        "duration": "0:00",
         "scripts": 3,
         "status": "متاح للتسليم"
       },
       {
-        "duration": "0:00:00",
+        "duration": "0:00",
         "scripts": 1,
         "status": "في انتظار التعديلات"
       }
@@ -208,17 +213,17 @@
     "name": "RICK & RICKY",
     "tasks": [
       {
-        "duration": "0:00:00",
+        "duration": "0:00",
         "scripts": 1,
         "status": "ناقص صوت"
       },
       {
-        "duration": "0:00:00",
+        "duration": "0:00",
         "scripts": 7,
         "status": "متاح للتسليم"
       },
       {
-        "duration": "0:00:00",
+        "duration": "0:00",
         "scripts": 1,
         "status": "في انتظار التعديلات"
       }
@@ -291,7 +296,7 @@
                                     <span class="${isAvailable ? 'status-highlight' : 'text-slate-900 dark:text-slate-100'}">${task.status}</span>
                                 </td>
                                 <td class="px-4 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400 font-mono">
-                                    ${toMinutesSeconds(task.duration)}
+                                    ${task.duration}
                                 </td>
                                 <td class="px-4 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400 font-bold">${task.scripts}</td>
                             </tr>
