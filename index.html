@@ -236,6 +236,20 @@
   }
 ];
 
+        function formatDurationArabic(text) {
+            // Examples: "1 day, 15:01:00", "2 days, 6:36:00", "4:38:00", "0:00:00"
+            const match = text.match(/^(?:(\d+)\s+days?,\s*)?(\d+):(\d+):(\d+)$/);
+            if (!match) return text;
+            const days = match[1] ? parseInt(match[1]) : 0;
+            const hours = parseInt(match[2]);
+            const minutes = parseInt(match[3]);
+            const parts = [];
+            if (days > 0) parts.push(`${days} يوم${days > 1 ? '' : ''}`);
+            if (hours > 0) parts.push(`${hours} ساعة${hours > 1 ? '' : ''}`);
+            if (minutes > 0) parts.push(`${minutes} دقيقة${minutes > 1 ? '' : ''}`);
+            return parts.length ? parts.join('، ') : '0 دقيقة';
+        }
+
         function createProjectSection(project, index) {
             const section = document.createElement('div');
             section.className = 'card p-6 md:p-8 mb-8';
@@ -262,7 +276,7 @@
                     <thead>
                         <tr class="bg-slate-50 dark:bg-slate-800/50">
                             <th class="px-4 py-4 text-right text-sm font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider">الحالة</th>
-                            <th class="px-4 py-4 text-right text-sm font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider">المدة (دقائق:ثواني)</th>
+                            <th class="px-4 py-4 text-right text-sm font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider">المدة</th>
                             <th class="px-4 py-4 text-right text-sm font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider">السكربتات</th>
                         </tr>
                     </thead>
@@ -274,8 +288,8 @@
                                 <td class="px-4 py-4 whitespace-nowrap text-sm font-medium">
                                     <span class="${isAvailable ? 'status-highlight' : 'text-slate-900 dark:text-slate-100'}">${task.status}</span>
                                 </td>
-                                <td class="px-4 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400 font-mono">
-                                    ${task.duration}
+                                <td class="px-4 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
+                                    ${formatDurationArabic(task.duration)}
                                 </td>
                                 <td class="px-4 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400 font-bold">${task.scripts}</td>
                             </tr>
