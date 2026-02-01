@@ -227,14 +227,14 @@
 ];
 
         function toMinutesSeconds(text) {
-            // Convert "X days, HH:MM:SS" or "HH:MM:SS" to total minutes:seconds
+            // Convert "X days, HH:MM:SS" or "HH:MM:SS" to minutes:seconds (MM:SS)
             const match = text.match(/^(?:(\d+)\s+days?,\s*)?(\d+):(\d+):(\d+)$/);
             if (!match) return text;
             const days = match[1] ? parseInt(match[1]) : 0;
             const hours = parseInt(match[2]);
             const minutes = parseInt(match[3]);
-            const totalMinutes = days * 24 * 60 + hours * 60 + minutes;
             const seconds = parseInt(match[4]);
+            const totalMinutes = days * 24 * 60 + hours * 60 + minutes;
             return `${totalMinutes}:${seconds.toString().padStart(2, '0')}`;
         }
 
