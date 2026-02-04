@@ -1,284 +1,330 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl" class="dark">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة متابعة المشاريع - النسخة النهائية</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: {
-                        tajawal: ['Tajawal', 'sans-serif'],
-                    },
-                },
-            },
-        }
-    </script>
-    <style>
-        body { font-family: 'Tajawal', sans-serif; }
-        .dark body { background-color: #0f172a; color: #f8fafc; }
-        .dark .card { background-color: #1e293b; border-color: #334155; }
-        .card { background: white; border-radius: 1rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); border: 1px solid #e2e8f0; }
-        .status-highlight { background-color: #10b981; color: white; padding: 2px 10px; border-radius: 9999px; font-weight: bold; box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3); }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لوحة متابعة المشاريع - النسخة النهائية</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            tajawal: ['Tajawal', 'sans-serif'],
+          },
+        },
+      },
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Tajawal', sans-serif;
+    }
+
+    .dark body {
+      background-color: #0f172a;
+      color: #f8fafc;
+    }
+
+    .dark .card {
+      background-color: #1e293b;
+      border-color: #334155;
+    }
+
+    .card {
+      background: white;
+      border-radius: 1rem;
+      box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+      border: 1px solid #e2e8f0;
+    }
+
+    .status-highlight {
+      background-color: #10b981;
+      color: white;
+      padding: 2px 10px;
+      border-radius: 9999px;
+      font-weight: bold;
+      box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);
+    }
+
+    .status-special {
+      background: linear-gradient(135deg, #10b981, #f97316);
+      color: white;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      font-weight: bold;
+      box-shadow: 0 2px 8px rgba(249, 115, 22, 0.4);
+    }
+  </style>
 </head>
+
 <body class="p-4 md:p-8 transition-colors duration-200">
-    <div id="app" class="max-w-6xl mx-auto">
-        <header class="mb-10 text-center">
-            <div class="flex justify-between items-center mb-6">
-                <button onclick="document.documentElement.classList.toggle('dark')" class="px-4 py-2 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold transition-all hover:scale-105">
-                    تبديل الوضع (Dark/Light)
-                </button>
-            </div>
-            <h1 class="text-4xl font-bold text-slate-800 dark:text-white mb-4">لوحة متابعة المشاريع</h1>
-            <div class="bg-amber-50 dark:bg-amber-900/20 border-l-4 border-amber-500 p-4 inline-block rounded-r-lg">
-                <p class="text-amber-800 dark:text-amber-200 text-xl font-bold">
-                    توضيح المدة الزمنية المذكورة أدناه ( دقائق : ثواني)
-                </p>
-            </div>
-        </header>
+  <div id="app" class="max-w-6xl mx-auto">
+    <header class="mb-10 text-center">
+      <div class="flex justify-between items-center mb-6">
+        <button onclick="document.documentElement.classList.toggle('dark')"
+          class="px-4 py-2 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold transition-all hover:scale-105">
+          تبديل الوضع (Dark/Light)
+        </button>
+      </div>
+      <h1 class="text-4xl font-bold text-slate-800 dark:text-white mb-4">لوحة متابعة المشاريع</h1>
+      <div class="bg-amber-50 dark:bg-amber-900/20 border-l-4 border-amber-500 p-4 inline-block rounded-r-lg">
+        <p class="text-amber-800 dark:text-amber-200 text-xl font-bold">
+          توضيح المدة الزمنية المذكورة أدناه ( دقائق : ثواني)
+        </p>
+      </div>
+    </header>
 
-        <div id="projects-container" class="space-y-12">
-            <!-- Projects will be injected here -->
-        </div>
-
-        <div id="coming-soon-container" class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12">
-            <!-- Coming Soon projects will be injected here -->
-        </div>
+    <div id="projects-container" class="space-y-12">
+      <!-- Projects will be injected here -->
     </div>
 
-    <script>
-        const data = [
-  {
-    "name": "DORO PROJECT",
-    "tasks": [
-      {
-        "duration": "113:56",
-        "scripts": 27,
-        "status": "اترفع علي القناة"
-      },
-      {
-        "duration": "56:05",
-        "scripts": 4,
-        "status": "خلص التعديلات"
-      },
-      {
-        "duration": "44:33",
-        "scripts": 6,
-        "status": "شغال"
-      },
-      {
-        "duration": "31:00",
-        "scripts": 3,
-        "status": "جاري التعديل"
-      },
-      {
-        "duration": "417:48",
-        "scripts": 52,
-        "status": "في انتظار التعديلات"
-      },
-      {
-        "duration": "19:47",
-        "scripts": 1,
-        "status": "متاح للتسليم"
-      }
-    ]
-  },
-  {
-    "name": "MSA PROJECT",
-    "tasks": [
-      {
-        "duration": "54:36",
-        "scripts": 10,
-        "status": "خالص"
-      },
-      {
-        "duration": "39:53",
-        "scripts": 7,
-        "status": "شغال"
-      },
-      {
-        "duration": "181:59",
-        "scripts": 34,
-        "status": "في انتظار التعديل"
-      },
-      {
-        "duration": "360:39",
-        "scripts": 69,
-        "status": "في انتظار الموافقة علي الشخصيات"
-      },
-      {
-        "duration": "4:38",
-        "scripts": 1,
-        "status": "مطلوب تغيير الشخصيات"
-      },
-      {
-        "duration": "41:20",
-        "scripts": 7,
-        "status": "متاح للتسليم"
-      },
-      {
-        "duration": "0:00",
-        "scripts": 3,
-        "status": "في انتظار الصوت"
-      }
-    ]
-  },
-  {
-    "name": "مشروع قيم و عبر",
-    "tasks": [
-      {
-        "duration": "39:01",
-        "scripts": 6,
-        "status": "جاري التعديل"
-      },
-      {
-        "duration": "38:22",
-        "scripts": 9,
-        "status": "جاهز للريندر"
-      },
-      {
-        "duration": "68:06",
-        "scripts": 11,
-        "status": "شغال"
-      },
-      {
-        "duration": "710:39",
-        "scripts": 18,
-        "status": "في انتظار التعديلات"
-      },
-      {
-        "duration": "27:19",
-        "scripts": 5,
-        "status": "متاح للتسليم"
-      },
-      {
-        "duration": "83:31",
-        "scripts": 14,
-        "status": "في انتظار الموافقة علي الشخصيات"
-      }
-    ]
-  },
-  {
-    "name": "NURSERY PROJECT",
-    "tasks": [
-      {
-        "duration": "0:00",
-        "scripts": 0,
-        "status": "خالص"
-      },
-      {
-        "duration": "15:20",
-        "scripts": 15,
-        "status": "في انتظار التعديلات"
-      },
-      {
-        "duration": "15:50",
-        "scripts": 10,
-        "status": "شغال"
-      },
-      {
-        "duration": "4:36",
-        "scripts": 3,
-        "status": "متاح للتسليم"
-      }
-    ]
-  },
-  {
-    "name": "FOX",
-    "tasks": [
-      {
-        "duration": "0:00",
-        "scripts": 26,
-        "status": "ناقص صوت"
-      },
-      {
-        "duration": "0:00",
-        "scripts": 3,
-        "status": "متاح للتسليم"
-      },
-      {
-        "duration": "0:00",
-        "scripts": 1,
-        "status": "في انتظار التعديلات"
-      }
-    ]
-  },
-  {
-    "name": "RICK & RICKY",
-    "tasks": [
-      {
-        "duration": "0:00",
-        "scripts": 1,
-        "status": "ناقص صوت"
-      },
-      {
-        "duration": "0:00",
-        "scripts": 7,
-        "status": "متاح للتسليم"
-      },
-      {
-        "duration": "0:00",
-        "scripts": 1,
-        "status": "في انتظار التعديلات"
-      }
-    ]
-  }
-];
+    <div id="coming-soon-container" class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12">
+      <!-- Coming Soon projects will be injected here -->
+    </div>
+  </div>
 
-        function toMinutesSeconds(text) {
-            // Convert "X days, HH:MM:SS" or "HH:MM:SS" to minutes:seconds (MM:SS)
-            const match = text.match(/^(?:(\d+)\s+days?,\s*)?(\d+):(\d+):(\d+)$/);
-            if (!match) return text;
-            const days = match[1] ? parseInt(match[1]) : 0;
-            const hours = parseInt(match[2]);
-            const minutes = parseInt(match[3]);
-            const seconds = parseInt(match[4]);
-            const totalMinutes = days * 24 * 60 + hours * 60 + minutes;
-            return `${totalMinutes}:${seconds.toString().padStart(2, '0')}`;
-        }
+  <script>
+    const data = [
+      {
+        "name": "DORO PROJECT",
+        "tasks": [
+          {
+            "duration": "113:56",
+            "scripts": 27,
+            "status": "اترفع علي القناة"
+          },
+          {
+            "duration": "56:05",
+            "scripts": 4,
+            "status": "خلص التعديلات"
+          },
+          {
+            "duration": "44:33",
+            "scripts": 6,
+            "status": "شغال"
+          },
+          {
+            "duration": "31:00",
+            "scripts": 3,
+            "status": "جاري التعديل"
+          },
+          {
+            "duration": "417:48",
+            "scripts": 52,
+            "status": "في انتظار التعديلات"
+          },
+          {
+            "duration": "19:47",
+            "scripts": 1,
+            "status": "متاح للتسليم"
+          }
+        ]
+      },
+      {
+        "name": "MSA PROJECT",
+        "tasks": [
+          {
+            "duration": "54:36",
+            "scripts": 10,
+            "status": "خالص"
+          },
+          {
+            "duration": "39:53",
+            "scripts": 7,
+            "status": "شغال"
+          },
+          {
+            "duration": "181:59",
+            "scripts": 34,
+            "status": "في انتظار التعديل"
+          },
+          {
+            "duration": "360:39",
+            "scripts": 69,
+            "status": "في انتظار الموافقة علي الشخصيات"
+          },
+          {
+            "duration": "4:38",
+            "scripts": 1,
+            "status": "مطلوب تغيير الشخصيات"
+          },
+          {
+            "duration": "41:20",
+            "scripts": 7,
+            "status": "متاح للتسليم"
+          },
+          {
+            "duration": "0:00",
+            "scripts": 3,
+            "status": "في انتظار الصوت"
+          }
+        ]
+      },
+      {
+        "name": "مشروع قيم و عبر",
+        "tasks": [
+          {
+            "duration": "39:01",
+            "scripts": 6,
+            "status": "جاري التعديل"
+          },
+          {
+            "duration": "38:22",
+            "scripts": 9,
+            "status": "جاهز للريندر"
+          },
+          {
+            "duration": "68:06",
+            "scripts": 11,
+            "status": "شغال"
+          },
+          {
+            "duration": "710:39",
+            "scripts": 18,
+            "status": "في انتظار التعديلات"
+          },
+          {
+            "duration": "27:19",
+            "scripts": 5,
+            "status": "متاح للتسليم"
+          },
+          {
+            "duration": "83:31",
+            "scripts": 14,
+            "status": "في انتظار الموافقة علي الشخصيات"
+          }
+        ]
+      },
+      {
+        "name": "NURSERY PROJECT",
+        "tasks": [
+          {
+            "duration": "0:00",
+            "scripts": 0,
+            "status": "خالص"
+          },
+          {
+            "duration": "15:20",
+            "scripts": 15,
+            "status": "في انتظار التعديلات"
+          },
+          {
+            "duration": "15:50",
+            "scripts": 10,
+            "status": "شغال"
+          },
+          {
+            "duration": "4:36",
+            "scripts": 3,
+            "status": "متاح للتسليم"
+          },
+          {
+            "duration": "39:10",
+            "scripts": 28,
+            "status": "مدة الفيديوهات مجمعة"
+          },
+          {
+            "duration": "29:25",
+            "scripts": 20,
+            "status": "مدة صوت اغاني ال ai"
+          }
+        ]
+      },
+      {
+        "name": "FOX",
+        "tasks": [
+          {
+            "duration": "0:00",
+            "scripts": 26,
+            "status": "ناقص صوت"
+          },
+          {
+            "duration": "0:00",
+            "scripts": 3,
+            "status": "متاح للتسليم"
+          },
+          {
+            "duration": "0:00",
+            "scripts": 1,
+            "status": "في انتظار التعديلات"
+          }
+        ]
+      },
+      {
+        "name": "RICK & RICKY",
+        "tasks": [
+          {
+            "duration": "0:00",
+            "scripts": 1,
+            "status": "ناقص صوت"
+          },
+          {
+            "duration": "0:00",
+            "scripts": 7,
+            "status": "متاح للتسليم"
+          },
+          {
+            "duration": "0:00",
+            "scripts": 1,
+            "status": "في انتظار التعديلات"
+          }
+        ]
+      }
+    ];
 
-        function formatDurationArabic(text) {
-            // Examples: "1 day, 15:01:00", "2 days, 6:36:00", "4:38:00", "0:00:00"
-            const match = text.match(/^(?:(\d+)\s+days?,\s*)?(\d+):(\d+):(\d+)$/);
-            if (!match) return text;
-            const days = match[1] ? parseInt(match[1]) : 0;
-            const hours = parseInt(match[2]);
-            const minutes = parseInt(match[3]);
-            const parts = [];
-            if (days > 0) parts.push(`${days} يوم${days > 1 ? '' : ''}`);
-            if (hours > 0) parts.push(`${hours} ساعة${hours > 1 ? '' : ''}`);
-            if (minutes > 0) parts.push(`${minutes} دقيقة${minutes > 1 ? '' : ''}`);
-            return parts.length ? parts.join('، ') : '0 دقيقة';
-        }
+    function toMinutesSeconds(text) {
+      // Convert "X days, HH:MM:SS" or "HH:MM:SS" to minutes:seconds (MM:SS)
+      const match = text.match(/^(?:(\d+)\s+days?,\s*)?(\d+):(\d+):(\d+)$/);
+      if (!match) return text;
+      const days = match[1] ? parseInt(match[1]) : 0;
+      const hours = parseInt(match[2]);
+      const minutes = parseInt(match[3]);
+      const seconds = parseInt(match[4]);
+      const totalMinutes = days * 24 * 60 + hours * 60 + minutes;
+      return `${totalMinutes}:${seconds.toString().padStart(2, '0')}`;
+    }
 
-        function createProjectSection(project, index) {
-            const section = document.createElement('div');
-            section.className = 'card p-6 md:p-8 mb-8';
-            
-            const title = document.createElement('h2');
-            title.className = 'text-3xl font-bold text-slate-700 dark:text-slate-200 mb-6 border-b-2 border-emerald-500 pb-2 inline-block';
-            title.textContent = project.name;
-            section.appendChild(title);
+    function formatDurationArabic(text) {
+      // Examples: "1 day, 15:01:00", "2 days, 6:36:00", "4:38:00", "0:00:00"
+      const match = text.match(/^(?:(\d+)\s+days?,\s*)?(\d+):(\d+):(\d+)$/);
+      if (!match) return text;
+      const days = match[1] ? parseInt(match[1]) : 0;
+      const hours = parseInt(match[2]);
+      const minutes = parseInt(match[3]);
+      const parts = [];
+      if (days > 0) parts.push(`${days} يوم${days > 1 ? '' : ''}`);
+      if (hours > 0) parts.push(`${hours} ساعة${hours > 1 ? '' : ''}`);
+      if (minutes > 0) parts.push(`${minutes} دقيقة${minutes > 1 ? '' : ''}`);
+      return parts.length ? parts.join('، ') : '0 دقيقة';
+    }
 
-            const grid = document.createElement('div');
-            grid.className = 'grid grid-cols-1 lg:grid-cols-2 gap-10';
-            
-            // Chart Container
-            const chartDiv = document.createElement('div');
-            chartDiv.className = 'bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-100 dark:border-slate-700';
-            chartDiv.innerHTML = `<canvas id="chart-${index}"></canvas>`;
-            grid.appendChild(chartDiv);
+    function createProjectSection(project, index) {
+      const section = document.createElement('div');
+      section.className = 'card p-6 md:p-8 mb-8';
 
-            // Table Container
-            const tableDiv = document.createElement('div');
-            tableDiv.className = 'overflow-x-auto';
-            tableDiv.innerHTML = `
+      const title = document.createElement('h2');
+      title.className = 'text-3xl font-bold text-slate-700 dark:text-slate-200 mb-6 border-b-2 border-emerald-500 pb-2 inline-block';
+      title.textContent = project.name;
+      section.appendChild(title);
+
+      const grid = document.createElement('div');
+      grid.className = 'grid grid-cols-1 lg:grid-cols-2 gap-10';
+
+      // Chart Container
+      const chartDiv = document.createElement('div');
+      chartDiv.className = 'bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-100 dark:border-slate-700';
+      chartDiv.innerHTML = `<canvas id="chart-${index}"></canvas>`;
+      grid.appendChild(chartDiv);
+
+      // Table Container
+      const tableDiv = document.createElement('div');
+      tableDiv.className = 'overflow-x-auto';
+      tableDiv.innerHTML = `
                 <table class="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
                     <thead>
                         <tr class="bg-slate-50 dark:bg-slate-800/50">
@@ -289,11 +335,21 @@
                     </thead>
                     <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
                         ${project.tasks.map(task => {
-                            const isAvailable = task.status.includes('متاح للتسليم');
-                            return `
-                            <tr class="${isAvailable ? 'bg-emerald-50/50 dark:bg-emerald-900/10' : 'hover:bg-slate-50 dark:hover:bg-slate-800/30'} transition-colors">
+        const isAvailable = task.status.includes('متاح للتسليم');
+        const isSpecial = task.status.includes('مدة الفيديوهات مجمعة') || task.status.includes('مدة صوت اغاني ال ai');
+        let rowClass = 'hover:bg-slate-50 dark:hover:bg-slate-800/30';
+        let statusClass = 'text-slate-900 dark:text-slate-100';
+        if (isAvailable) {
+          rowClass = 'bg-emerald-50/50 dark:bg-emerald-900/10';
+          statusClass = 'status-highlight';
+        } else if (isSpecial) {
+          rowClass = 'bg-gradient-to-r from-emerald-50 to-orange-50 dark:from-emerald-900/20 dark:to-orange-900/20';
+          statusClass = 'status-special';
+        }
+        return `
+                            <tr class="${rowClass} transition-colors">
                                 <td class="px-4 py-4 whitespace-nowrap text-sm font-medium">
-                                    <span class="${isAvailable ? 'status-highlight' : 'text-slate-900 dark:text-slate-100'}">${task.status}</span>
+                                    <span class="${statusClass}">${task.status}</span>
                                 </td>
                                 <td class="px-4 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400 font-mono">
                                     ${task.duration}
@@ -304,57 +360,57 @@
                     </tbody>
                 </table>
             `;
-            grid.appendChild(tableDiv);
-            
-            section.appendChild(grid);
-            return section;
+      grid.appendChild(tableDiv);
+
+      section.appendChild(grid);
+      return section;
+    }
+
+    const container = document.getElementById('projects-container');
+    data.forEach((project, index) => {
+      container.appendChild(createProjectSection(project, index));
+
+      // Initialize Chart
+      const ctx = document.getElementById(`chart-${index}`).getContext('2d');
+
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: project.tasks.map(t => t.status),
+          datasets: [{
+            label: 'عدد السكربتات',
+            data: project.tasks.map(t => t.scripts),
+            backgroundColor: project.tasks.map(t => t.status.includes('متاح للتسليم') ? 'rgba(16, 185, 129, 0.7)' : 'rgba(59, 130, 246, 0.5)'),
+            borderColor: project.tasks.map(t => t.status.includes('متاح للتسليم') ? 'rgb(16, 185, 129)' : 'rgb(59, 130, 246)'),
+            borderWidth: 2,
+            borderRadius: 5
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: { color: 'rgba(200, 200, 200, 0.05)' },
+              ticks: { color: '#94a3b8', font: { weight: 'bold' } }
+            },
+            x: {
+              grid: { display: false },
+              ticks: { color: '#94a3b8', font: { weight: 'bold' } }
+            }
+          }
         }
+      });
+    });
 
-        const container = document.getElementById('projects-container');
-        data.forEach((project, index) => {
-            container.appendChild(createProjectSection(project, index));
-            
-            // Initialize Chart
-            const ctx = document.getElementById(`chart-${index}`).getContext('2d');
-            
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: project.tasks.map(t => t.status),
-                    datasets: [{
-                        label: 'عدد السكربتات',
-                        data: project.tasks.map(t => t.scripts),
-                        backgroundColor: project.tasks.map(t => t.status.includes('متاح للتسليم') ? 'rgba(16, 185, 129, 0.7)' : 'rgba(59, 130, 246, 0.5)'),
-                        borderColor: project.tasks.map(t => t.status.includes('متاح للتسليم') ? 'rgb(16, 185, 129)' : 'rgb(59, 130, 246)'),
-                        borderWidth: 2,
-                        borderRadius: 5
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: { display: false }
-                    },
-                    scales: {
-                        y: { 
-                            beginAtZero: true,
-                            grid: { color: 'rgba(200, 200, 200, 0.05)' },
-                            ticks: { color: '#94a3b8', font: { weight: 'bold' } }
-                        },
-                        x: {
-                            grid: { display: false },
-                            ticks: { color: '#94a3b8', font: { weight: 'bold' } }
-                        }
-                    }
-                }
-            });
-        });
 
-    
-        comingSoonProjects.forEach(name => {
-            const card = document.createElement('div');
-            card.className = 'overflow-hidden rounded-lg shadow-lg border border-emerald-500/30 transition-transform duration-300 hover:scale-[1.02]';
-            card.innerHTML = `
+    comingSoonProjects.forEach(name => {
+      const card = document.createElement('div');
+      card.className = 'overflow-hidden rounded-lg shadow-lg border border-emerald-500/30 transition-transform duration-300 hover:scale-[1.02]';
+      card.innerHTML = `
                 <div class="bg-emerald-500 py-4 px-6 text-center">
                     <h3 class="text-xl font-bold text-white uppercase tracking-wider">${name}</h3>
                 </div>
@@ -362,8 +418,9 @@
                     <p class="text-2xl font-bold text-slate-700 dark:text-slate-200 tracking-widest">COMING SOON</p>
                 </div>
             `;
-            comingSoonContainer.appendChild(card);
-        });
-    </script>
+      comingSoonContainer.appendChild(card);
+    });
+  </script>
 </body>
+
 </html>

@@ -32,6 +32,7 @@ dist/
 # Python files
 update.py
 update_dashboard.py
+check_data.py
 # output files
 analysis_output.txt
 analysis_result.txt
