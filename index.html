@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>لوحة متابعة المشاريع - النسخة النهائية</title>
+  <title>لوحة متابعة المشاريع - بيانات مباشرة</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
@@ -59,6 +59,81 @@
       font-weight: bold;
       box-shadow: 0 2px 8px rgba(249, 115, 22, 0.4);
     }
+
+    /* Loading spinner */
+    .loader-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 4rem 0;
+    }
+
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid rgba(16, 185, 129, 0.2);
+      border-top: 4px solid #10b981;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* Live indicator */
+    .live-dot {
+      width: 10px;
+      height: 10px;
+      background: #10b981;
+      border-radius: 50%;
+      display: inline-block;
+      animation: pulse 1.5s ease-in-out infinite;
+      margin-left: 6px;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 0.5;
+        transform: scale(0.8);
+      }
+    }
+
+    .update-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #10b981;
+      transition: all 0.3s;
+    }
+
+    .error-banner {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #ef4444;
+      padding: 12px 20px;
+      border-radius: 12px;
+      text-align: center;
+      font-weight: bold;
+      margin-bottom: 1rem;
+    }
   </style>
 </head>
 
@@ -70,6 +145,11 @@
           class="px-4 py-2 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold transition-all hover:scale-105">
           تبديل الوضع (Dark/Light)
         </button>
+        <div id="live-status" class="update-bar" style="display:none;">
+          <span class="live-dot"></span>
+          <span>LIVE</span>
+          <span id="last-update-time"></span>
+        </div>
       </div>
       <h1 class="text-4xl font-bold text-slate-800 dark:text-white mb-4">لوحة متابعة المشاريع</h1>
       <div class="bg-amber-50 dark:bg-amber-900/20 border-l-4 border-amber-500 p-4 inline-block rounded-r-lg">
@@ -78,6 +158,15 @@
         </p>
       </div>
     </header>
+
+    <!-- Error banner -->
+    <div id="error-banner" class="error-banner" style="display:none;"></div>
+
+    <!-- Loading spinner -->
+    <div id="loading-container" class="loader-container">
+      <div class="spinner"></div>
+      <p class="mt-4 text-slate-500 dark:text-slate-400 font-bold text-lg">جاري تحميل البيانات من Google Sheets...</p>
+    </div>
 
     <div id="projects-container" class="space-y-12">
       <!-- Projects will be injected here -->
@@ -89,220 +178,180 @@
   </div>
 
   <script>
-    const data = [
-  {
-    "name": "DORO PROJECT",
-    "tasks": [
-      {
-        "duration": "113:56",
-        "scripts": 27,
-        "status": "اترفع علي القناة"
-      },
-      {
-        "duration": "56:05",
-        "scripts": 4,
-        "status": "خلص التعديلات"
-      },
-      {
-        "duration": "44:33",
-        "scripts": 6,
-        "status": "شغال"
-      },
-      {
-        "duration": "31:00",
-        "scripts": 3,
-        "status": "جاري التعديل"
-      },
-      {
-        "duration": "417:48",
-        "scripts": 52,
-        "status": "في انتظار التعديلات"
-      },
-      {
-        "duration": "19:47",
-        "scripts": 1,
-        "status": "متاح للتسليم"
-      }
-    ]
-  },
-  {
-    "name": "MSA PROJECT",
-    "tasks": [
-      {
-        "duration": "54:36",
-        "scripts": 10,
-        "status": "خالص"
-      },
-      {
-        "duration": "39:53",
-        "scripts": 7,
-        "status": "شغال"
-      },
-      {
-        "duration": "181:59",
-        "scripts": 34,
-        "status": "في انتظار التعديل"
-      },
-      {
-        "duration": "360:39",
-        "scripts": 70,
-        "status": "في انتظار الموافقة علي الشخصيات"
-      },
-      {
-        "duration": "4:38",
-        "scripts": 1,
-        "status": "مطلوب تغيير الشخصيات"
-      },
-      {
-        "duration": "41:20",
-        "scripts": 7,
-        "status": "متاح للتسليم"
-      },
-      {
-        "duration": "0:00",
-        "scripts": 3,
-        "status": "في انتظار الصوت"
-      }
-    ]
-  },
-  {
-    "name": "مشروع قيم و عبر",
-    "tasks": [
-      {
-        "duration": "49:24",
-        "scripts": 8,
-        "status": "جاري التعديل"
-      },
-      {
-        "duration": "38:22",
-        "scripts": 9,
-        "status": "جاهز للريندر"
-      },
-      {
-        "duration": "33:59",
-        "scripts": 6,
-        "status": "شغال"
-      },
-      {
-        "duration": "734:23",
-        "scripts": 21,
-        "status": "في انتظار التعديلات"
-      },
-      {
-        "duration": "18:09",
-        "scripts": 3,
-        "status": "متاح للتسليم"
-      },
-      {
-        "duration": "83:31",
-        "scripts": 14,
-        "status": "في انتظار الموافقة علي الشخصيات"
-      }
-    ]
-  },
-  {
-    "name": "NURSERY PROJECT",
-    "tasks": [
-      {
-        "duration": "0:00",
-        "scripts": 0,
-        "status": "خالص"
-      },
-      {
-        "duration": "15:20",
-        "scripts": 18,
-        "status": "في انتظار التعديلات"
-      },
-      {
-        "duration": "18:02",
-        "scripts": 11,
-        "status": "شغال"
-      },
-      {
-        "duration": "0:00",
-        "scripts": 0,
-        "status": "متاح للتسليم"
-      },
-      {
-        "duration": "45:22",
-        "scripts": 29,
-        "status": "مدة الفيديوهات مجمعة"
-      },
-      {
-        "duration": "31:01",
-        "scripts": 20,
-        "status": "مدة صوت اغاني ال ai"
-      }
-    ]
-  },
-  {
-    "name": "FOX",
-    "tasks": [
-      {
-        "duration": "0:00",
-        "scripts": 26,
-        "status": "ناقص صوت"
-      },
-      {
-        "duration": "0:00",
-        "scripts": 3,
-        "status": "متاح للتسليم"
-      },
-      {
-        "duration": "0:00",
-        "scripts": 1,
-        "status": "في انتظار التعديلات"
-      }
-    ]
-  },
-  {
-    "name": "RICK & RICKY",
-    "tasks": [
-      {
-        "duration": "0:00",
-        "scripts": 1,
-        "status": "ناقص صوت"
-      },
-      {
-        "duration": "0:00",
-        "scripts": 7,
-        "status": "متاح للتسليم"
-      },
-      {
-        "duration": "0:00",
-        "scripts": 1,
-        "status": "في انتظار التعديلات"
-      }
-    ]
-  }
-];
+    // ─── CONFIG ───
+    const SHEET_ID = '1S2c1ewWG2WpvQggxc6kRp4kEwEwpcEaG';
+    const GID = '1416447339';
+    const REFRESH_INTERVAL = 30000; // 30 seconds
 
-    function toMinutesSeconds(text) {
-      // Convert "X days, HH:MM:SS" or "HH:MM:SS" to minutes:seconds (MM:SS)
-      const match = text.match(/^(?:(\d+)\s+days?,\s*)?(\d+):(\d+):(\d+)$/);
-      if (!match) return text;
-      const days = match[1] ? parseInt(match[1]) : 0;
-      const hours = parseInt(match[2]);
-      const minutes = parseInt(match[3]);
-      const seconds = parseInt(match[4]);
-      const totalMinutes = days * 24 * 60 + hours * 60 + minutes;
-      return `${totalMinutes}:${seconds.toString().padStart(2, '0')}`;
+    // Track chart instances so we can destroy them on refresh
+    let chartInstances = [];
+    let requestCounter = 0;
+
+    // ─── JSONP FETCH (BYPASSES ALL CORS) ───
+    function fetchSheetData() {
+      return new Promise((resolve, reject) => {
+        const callbackName = `__sheetCallback_${++requestCounter}_${Date.now()}`;
+        const timeoutId = setTimeout(() => {
+          delete window[callbackName];
+          cleanupScript();
+          reject(new Error('Request timed out'));
+        }, 15000);
+
+        let scriptEl;
+
+        function cleanupScript() {
+          if (scriptEl && scriptEl.parentNode) {
+            scriptEl.parentNode.removeChild(scriptEl);
+          }
+        }
+
+        // The Google Visualization API returns: responseHandler({...})
+        // We use tqx=responseHandler:callbackName to make it call our function
+        window[callbackName] = function (response) {
+          clearTimeout(timeoutId);
+          delete window[callbackName];
+          cleanupScript();
+
+          if (response.status === 'error') {
+            reject(new Error(response.errors ? response.errors[0].detailed_message : 'Unknown error'));
+            return;
+          }
+
+          try {
+            const projects = extractProjectsFromResponse(response);
+            resolve(projects);
+          } catch (e) {
+            reject(e);
+          }
+        };
+
+        scriptEl = document.createElement('script');
+        scriptEl.src = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=responseHandler:${callbackName}&gid=${GID}`;
+        scriptEl.onerror = function () {
+          clearTimeout(timeoutId);
+          delete window[callbackName];
+          cleanupScript();
+          reject(new Error('Failed to load script'));
+        };
+        document.head.appendChild(scriptEl);
+      });
     }
 
-    function formatDurationArabic(text) {
-      // Examples: "1 day, 15:01:00", "2 days, 6:36:00", "4:38:00", "0:00:00"
-      const match = text.match(/^(?:(\d+)\s+days?,\s*)?(\d+):(\d+):(\d+)$/);
-      if (!match) return text;
-      const days = match[1] ? parseInt(match[1]) : 0;
-      const hours = parseInt(match[2]);
-      const minutes = parseInt(match[3]);
-      const parts = [];
-      if (days > 0) parts.push(`${days} يوم${days > 1 ? '' : ''}`);
-      if (hours > 0) parts.push(`${hours} ساعة${hours > 1 ? '' : ''}`);
-      if (minutes > 0) parts.push(`${minutes} دقيقة${minutes > 1 ? '' : ''}`);
-      return parts.length ? parts.join('، ') : '0 دقيقة';
+    // ─── EXTRACT PROJECTS FROM GOOGLE VIZ RESPONSE ───
+    function extractProjectsFromResponse(response) {
+      const table = response.table;
+      const rows = table.rows;
+      const numRows = rows.length;
+      const numCols = table.cols.length;
+
+      // Helper to get cell value
+      function cellVal(rowIdx, colIdx) {
+        if (rowIdx >= numRows || colIdx >= numCols) return '';
+        const row = rows[rowIdx];
+        if (!row || !row.c || colIdx >= row.c.length) return '';
+        const cell = row.c[colIdx];
+        if (!cell) return '';
+        // Prefer formatted value (f) for display, fallback to raw value (v)
+        if (cell.f !== undefined && cell.f !== null) return String(cell.f).trim();
+        if (cell.v !== undefined && cell.v !== null) return String(cell.v).trim();
+        return '';
+      }
+
+      function cellRaw(rowIdx, colIdx) {
+        if (rowIdx >= numRows || colIdx >= numCols) return null;
+        const row = rows[rowIdx];
+        if (!row || !row.c || colIdx >= row.c.length) return null;
+        const cell = row.c[colIdx];
+        if (!cell) return null;
+        return cell.v;
+      }
+
+      const projects = [];
+
+      // Note: Google Viz API strips the header row, so data starts at row 0
+      // --- DORO PROJECT (rows 0-5, cols 1,2,3) ---
+      const doro = { name: 'DORO PROJECT', tasks: [] };
+      for (let r = 0; r <= 5; r++) {
+        const task = makeTask(cellVal(r, 1), cellRaw(r, 2), cellVal(r, 3));
+        if (task) doro.tasks.push(task);
+      }
+      if (doro.tasks.length) projects.push(doro);
+
+      // --- MSA PROJECT (rows 0-6, cols 5,6,7) ---
+      const msa = { name: 'MSA PROJECT', tasks: [] };
+      for (let r = 0; r <= 6; r++) {
+        const task = makeTask(cellVal(r, 5), cellRaw(r, 6), cellVal(r, 7));
+        if (task) msa.tasks.push(task);
+      }
+      if (msa.tasks.length) projects.push(msa);
+
+      // --- Find block 2 header (second "حالة" in col 3) ---
+      let block2Start = -1;
+      let headerCount = 0;
+      for (let r = 0; r < numRows; r++) {
+        const v = cellVal(r, 3);
+        if (v === 'حالة') {
+          headerCount++;
+          if (headerCount === 2) { block2Start = r; break; }
+        }
+      }
+      if (block2Start === -1) block2Start = 9;
+
+      // --- مشروع قيم و عبر (block 2 left, cols 1,2,3) ---
+      const qim = { name: 'مشروع قيم و عبر', tasks: [] };
+      for (let r = block2Start + 1; r <= block2Start + 10 && r < numRows; r++) {
+        const task = makeTask(cellVal(r, 1), cellRaw(r, 2), cellVal(r, 3));
+        if (task) qim.tasks.push(task);
+      }
+      if (qim.tasks.length) projects.push(qim);
+
+      // --- NURSERY PROJECT (block 2 right, cols 5,6,7) ---
+      const nursery = { name: 'NURSERY PROJECT', tasks: [] };
+      for (let r = block2Start + 1; r <= block2Start + 7 && r < numRows; r++) {
+        const task = makeTask(cellVal(r, 5), cellRaw(r, 6), cellVal(r, 7));
+        if (task) nursery.tasks.push(task);
+      }
+      if (nursery.tasks.length) projects.push(nursery);
+
+      // --- Find RICK & RICKY header (next "حالة" in col 7 after nursery) ---
+      let rickStart = -1;
+      for (let r = block2Start + 5; r < numRows; r++) {
+        if (cellVal(r, 7) === 'حالة') { rickStart = r; break; }
+      }
+      if (rickStart === -1) rickStart = 21;
+
+      const rick = { name: 'RICK & RICKY', tasks: [] };
+      for (let r = rickStart + 1; r <= rickStart + 3 && r < numRows; r++) {
+        const task = makeTask(cellVal(r, 5), cellRaw(r, 6), cellVal(r, 7));
+        if (task) rick.tasks.push(task);
+      }
+      if (rick.tasks.length) projects.push(rick);
+
+      // --- Find FOX header (next "حالة" in col 7 after rick) ---
+      let foxStart = -1;
+      for (let r = rickStart + 2; r < numRows; r++) {
+        if (cellVal(r, 7) === 'حالة') { foxStart = r; break; }
+      }
+      if (foxStart === -1) foxStart = 25;
+
+      const fox = { name: 'FOX', tasks: [] };
+      for (let r = foxStart + 1; r <= foxStart + 3 && r < numRows; r++) {
+        const task = makeTask(cellVal(r, 5), cellRaw(r, 6), cellVal(r, 7));
+        if (task) fox.tasks.push(task);
+      }
+      if (fox.tasks.length) projects.push(fox);
+
+      return projects;
     }
 
+    function makeTask(duration, scriptsRaw, status) {
+      if (!status || status === 'حالة') return null;
+      const scripts = parseInt(scriptsRaw) || 0;
+      const dur = duration || '0:00';
+      return { duration: dur, scripts, status };
+    }
+
+    // ─── UI RENDERING ───
     function createProjectSection(project, index) {
       const section = document.createElement('div');
       section.className = 'card p-6 md:p-8 mb-8';
@@ -315,20 +364,20 @@
       const grid = document.createElement('div');
       grid.className = 'grid grid-cols-1 lg:grid-cols-2 gap-10';
 
-      // Table Container
+      // Table
       const tableDiv = document.createElement('div');
       tableDiv.className = 'overflow-x-auto';
       tableDiv.innerHTML = `
-                <table class="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
-                    <thead>
-                        <tr class="bg-slate-50 dark:bg-slate-800/50">
-                            <th class="px-4 py-4 text-right text-sm font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider">الحالة</th>
-                            <th class="px-4 py-4 text-right text-sm font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider">المدة (دقائق:ثواني)</th>
-                            <th class="px-4 py-4 text-right text-sm font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider">السكربتات</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
-                        ${project.tasks.map(task => {
+        <table class="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
+          <thead>
+            <tr class="bg-slate-50 dark:bg-slate-800/50">
+              <th class="px-4 py-4 text-right text-sm font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider">الحالة</th>
+              <th class="px-4 py-4 text-right text-sm font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider">المدة (دقائق:ثواني)</th>
+              <th class="px-4 py-4 text-right text-sm font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider">السكربتات</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
+            ${project.tasks.map(task => {
         const isAvailable = task.status.includes('متاح للتسليم');
         const isSpecial = task.status.includes('مدة الفيديوهات مجمعة') || task.status.includes('مدة صوت اغاني ال ai');
         let rowClass = 'hover:bg-slate-50 dark:hover:bg-slate-800/30';
@@ -341,22 +390,23 @@
           statusClass = 'status-special';
         }
         return `
-                            <tr class="${rowClass} transition-colors">
-                                <td class="px-4 py-4 whitespace-nowrap text-sm font-medium">
-                                    <span class="${statusClass}">${task.status}</span>
-                                </td>
-                                <td class="px-4 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400 font-mono">
-                                    ${task.duration}
-                                </td>
-                                <td class="px-4 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400 font-bold">${task.scripts}</td>
-                            </tr>
-                        `}).join('')}
-                    </tbody>
-                </table>
-            `;
+                <tr class="${rowClass} transition-colors">
+                  <td class="px-4 py-4 text-sm font-medium">
+                    <span class="${statusClass}">${task.status}</span>
+                  </td>
+                  <td class="px-4 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400 font-mono">
+                    ${task.duration}
+                  </td>
+                  <td class="px-4 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400 font-bold">${task.scripts}</td>
+                </tr>
+              `;
+      }).join('')}
+          </tbody>
+        </table>
+      `;
       grid.appendChild(tableDiv);
 
-      // Chart Container
+      // Chart
       const chartDiv = document.createElement('div');
       chartDiv.className = 'bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-100 dark:border-slate-700';
       chartDiv.innerHTML = `<canvas id="chart-${index}"></canvas>`;
@@ -366,60 +416,107 @@
       return section;
     }
 
-    const container = document.getElementById('projects-container');
-    data.forEach((project, index) => {
-      container.appendChild(createProjectSection(project, index));
+    function renderDashboard(data) {
+      // Destroy existing charts
+      chartInstances.forEach(c => c.destroy());
+      chartInstances = [];
 
-      // Initialize Chart
-      const ctx = document.getElementById(`chart-${index}`).getContext('2d');
+      const container = document.getElementById('projects-container');
+      container.innerHTML = '';
 
-      new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: project.tasks.map(t => t.status),
-          datasets: [{
-            label: 'عدد السكربتات',
-            data: project.tasks.map(t => t.scripts),
-            backgroundColor: project.tasks.map(t => t.status.includes('متاح للتسليم') ? 'rgba(16, 185, 129, 0.7)' : 'rgba(59, 130, 246, 0.5)'),
-            borderColor: project.tasks.map(t => t.status.includes('متاح للتسليم') ? 'rgb(16, 185, 129)' : 'rgb(59, 130, 246)'),
-            borderWidth: 2,
-            borderRadius: 5
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: { display: false }
+      data.forEach((project, index) => {
+        container.appendChild(createProjectSection(project, index));
+
+        const ctx = document.getElementById(`chart-${index}`).getContext('2d');
+        const chart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: project.tasks.map(t => t.status),
+            datasets: [{
+              label: 'عدد السكربتات',
+              data: project.tasks.map(t => t.scripts),
+              backgroundColor: project.tasks.map(t => t.status.includes('متاح للتسليم') ? 'rgba(16, 185, 129, 0.7)' : 'rgba(59, 130, 246, 0.5)'),
+              borderColor: project.tasks.map(t => t.status.includes('متاح للتسليم') ? 'rgb(16, 185, 129)' : 'rgb(59, 130, 246)'),
+              borderWidth: 2,
+              borderRadius: 5
+            }]
           },
-          scales: {
-            y: {
-              beginAtZero: true,
-              grid: { color: 'rgba(200, 200, 200, 0.05)' },
-              ticks: { color: '#94a3b8', font: { weight: 'bold' } }
+          options: {
+            responsive: true,
+            plugins: {
+              legend: { display: false }
             },
-            x: {
-              grid: { display: false },
-              ticks: { color: '#94a3b8', font: { weight: 'bold' } }
+            scales: {
+              y: {
+                beginAtZero: true,
+                grid: { color: 'rgba(200, 200, 200, 0.05)' },
+                ticks: { color: '#94a3b8', font: { weight: 'bold' } }
+              },
+              x: {
+                grid: { display: false },
+                ticks: { color: '#94a3b8', font: { weight: 'bold' } }
+              }
             }
           }
-        }
+        });
+        chartInstances.push(chart);
       });
-    });
+    }
 
+    function showLoading(show) {
+      document.getElementById('loading-container').style.display = show ? 'flex' : 'none';
+    }
 
-    comingSoonProjects.forEach(name => {
-      const card = document.createElement('div');
-      card.className = 'overflow-hidden rounded-lg shadow-lg border border-emerald-500/30 transition-transform duration-300 hover:scale-[1.02]';
-      card.innerHTML = `
-                <div class="bg-emerald-500 py-4 px-6 text-center">
-                    <h3 class="text-xl font-bold text-white uppercase tracking-wider">${name}</h3>
-                </div>
-                <div class="bg-white dark:bg-slate-800 py-8 px-6 text-center">
-                    <p class="text-2xl font-bold text-slate-700 dark:text-slate-200 tracking-widest">COMING SOON</p>
-                </div>
-            `;
-      comingSoonContainer.appendChild(card);
-    });
+    function showError(message) {
+      const banner = document.getElementById('error-banner');
+      if (message) {
+        banner.textContent = message;
+        banner.style.display = 'block';
+      } else {
+        banner.style.display = 'none';
+      }
+    }
+
+    function updateTimestamp() {
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      document.getElementById('last-update-time').textContent = `آخر تحديث: ${timeStr}`;
+      document.getElementById('live-status').style.display = 'flex';
+    }
+
+    // ─── MAIN LOOP ───
+    let isFirstLoad = true;
+
+    async function loadData() {
+      try {
+        if (isFirstLoad) showLoading(true);
+        showError(null);
+
+        const data = await fetchSheetData();
+        renderDashboard(data);
+        updateTimestamp();
+
+        if (isFirstLoad) {
+          showLoading(false);
+          isFirstLoad = false;
+        }
+
+        console.log(`✅ Dashboard updated at ${new Date().toLocaleTimeString()} — ${data.length} projects loaded`);
+      } catch (err) {
+        console.error('❌ Failed to fetch data:', err);
+        if (isFirstLoad) {
+          showLoading(false);
+          showError('فشل تحميل البيانات من Google Sheets. تأكد أن الشيت مشارك كـ "Anyone with the link can view" وأنك متصل بالإنترنت.');
+          isFirstLoad = false;
+        } else {
+          showError('فشل تحديث البيانات. سيتم المحاولة مرة أخرى تلقائياً...');
+        }
+      }
+    }
+
+    // Start!
+    loadData();
+    setInterval(loadData, REFRESH_INTERVAL);
   </script>
 </body>
 
